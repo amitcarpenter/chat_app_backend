@@ -17,7 +17,7 @@ const { corsOptionsDelegate } = require("./app/middleware/cors");
 
 const app = express();
 app.use(express.static(path.join(__dirname, "uploads")));
-app.use(cors(corsOptionsDelegate));
+app.use(cors());
 
 const server = http.createServer(app);
 app.use(express.json({ limit: "500mb" }));
@@ -27,13 +27,17 @@ let users = [];
 exports.IO = new SocketManager(server);
 
 app.use(bodyParser.json({ limit: "50mb" }));
-// parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
 app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/feed", activityRoutes);
 app.use("/api/friend", addFriendRoutes);
+
+
+app.get("/", (req, res) => {
+  return res.send("Hello Chat App Working ")
+})
 
 dbConnect()
   .then(() => {

@@ -133,6 +133,7 @@ async function getAllFeed(authHeader) {
     throw error;
   }
 }
+
 async function feedLike(feedId, userId) {
   try {
     const getAllFeed = await Activity.findById(feedId);
@@ -202,6 +203,7 @@ async function feedComment(auth_token, comment, feedId) {
     throw error;
   }
 }
+
 async function getComments(authHeader, feedId) {
   try {
     const auth_token = authHeader.split(" ")[1];

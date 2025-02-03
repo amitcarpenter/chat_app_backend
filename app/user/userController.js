@@ -50,6 +50,7 @@ async function getAllUsers(authHeader) {
     throw error;
   }
 }
+
 async function getuserProfile(authHeader) {
   try {
     const auth_token = authHeader.split(" ")[1];
@@ -76,6 +77,7 @@ async function getuserProfile(authHeader) {
     throw error
   }
 }
+
 async function updateUserProfile(header, body, imageFile) {
   const authHeader = header["authorization"];
   let auth_token;
@@ -108,6 +110,7 @@ async function updateUserProfile(header, body, imageFile) {
     throw error;
   }
 }
+
 async function getSecondUserProfile(authHeader, userId) {
   try {
     let isUserLogin;
