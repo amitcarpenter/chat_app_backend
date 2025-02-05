@@ -29,6 +29,8 @@ router.get("/:roomId/:skip/:limit", handleUserChat);
 // handle all rooms
 async function handleAllRooms(req, res) {
   try {
+    console.log();
+    
     const authHeader = req.headers["authorization"];
     const auth_token = authHeader.split(" ")[1];
     const allRooms = await getAllRooms(auth_token);
@@ -42,6 +44,8 @@ async function handleAllRooms(req, res) {
       res.status(200).json({ message: allRooms, data: [], success: true });
     }
   } catch (error) {
+    console.log(error.message);
+    
     res.status(400).json({
       success: false,
       message: "Something went wrong",

@@ -5,7 +5,6 @@ const { User } = require("../user/userModal");
 const { Friend } = require("./addFriendModal");
 
 
-
 async function addFriend(authHeader, receiverId, action) {
     try {
         const auth_token = authHeader.split(" ")[1];
@@ -33,7 +32,6 @@ async function addFriend(authHeader, receiverId, action) {
                 else {
                     return "you aleady send Friend Request"
                 }
-
             } else if (
                 action === "CANCEL" ||
                 action === "REJECT" ||
@@ -62,8 +60,6 @@ async function addFriend(authHeader, receiverId, action) {
                 } else {
                     return `request already ${action}`
                 }
-
-
             } else if (action === "ACCEPT") {
                 const reqDocument = await Friend.findOneAndUpdate(
                     {
@@ -73,7 +69,7 @@ async function addFriend(authHeader, receiverId, action) {
                         ],
                     },
                     { action: "ACCEPTED" },
-                    { new: true } // To return the modified document
+                    { new: true }
                 );
                 return reqDocument;
             }
@@ -86,7 +82,5 @@ async function addFriend(authHeader, receiverId, action) {
         throw error;
     }
 }
-
-
 
 module.exports = { addFriend }

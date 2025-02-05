@@ -25,11 +25,16 @@ router.post("/likefeed", handleFeedLike);
 router.post("/addcomment", handleFeedComment);
 router.post('/filter-feed', handleFilterFeed)
 router.post("/createnew", upload.single("file"), compressImage, handleNewFeed);
-router.post('/edit-feed', upload.single("file"),compressImage, handleFeedEdit)
+router.post('/edit-feed', upload.single("file"), compressImage, handleFeedEdit)
 
+const APP_URL = process.env.APP_URL
+console.log(APP_URL);
 
 
 async function handleNewFeed(req, res) {
+  console.log(req.body);
+  console.log(req.file);
+
   let imageFile = "";
   let mimeType = ""
   if (req.file) {
@@ -53,7 +58,8 @@ async function handleNewFeed(req, res) {
   try {
     const { userId, caption, location, longitude, latitude, tag, visibility } = req.body;
     const authHeader = req.headers["authorization"];
-    const auth_token = authHeader.split(" ")[1];
+    const auth_token = '12323222';
+    // const auth_token = authHeader.split(" ")[1];
     const newFeed = await createNewFeed(
       auth_token,
       userId,
@@ -68,12 +74,13 @@ async function handleNewFeed(req, res) {
     );
 
     if (newFeed && typeof newFeed === "object") {
-      res.status(200).json({ data: newFeed, success: true });
+      return res.status(200).json({ data: newFeed, success: true });
     } else {
-      res.status(400).json({ message: newFeed, success: false });
+      return res.status(400).json({ message: newFeed, success: false });
     }
   } catch (error) {
-    res.status(400).json({ message: "something went wrong", success: false });
+    // return res.status(400).json({ message: "something went wrong", success: false });
+    return res.status(500).json({ success: false, status: 500, message: error.message })
   }
 }
 
@@ -207,13 +214,29 @@ async function handleFilterFeed(req, res) {
     const { visibility, distance, longitude, latitude, tag, location } = req.body;
     const authHeader = req.headers["authorization"];
     const result = await getFilterPost(authHeader, visibility, distance, longitude, latitude, location, tag)
+
+    // If no result or empty feeds, return success response
+    if (!result || !result.feeds || result.feeds.length === 0) {
+      return res.status(200).json({ success: true, data: [] });
+    }
+
+    // Append APP_URL to file paths in each feed
+    const final_result = await Promise.all(
+      result.feeds.map((feed) => {
+        feed.file = APP_URL + feed.file;
+        return feed;
+      })
+    );
+
+    let data = { feeds: final_result }
+
     if (result && typeof result == 'object') {
-      res.status(200).json({ data: result, success: true })
+      return res.status(200).json({ data: data, success: true })
     } else {
-      res.status(200).json({ message: result, success: true })
+      return res.status(200).json({ message: result, success: true })
     }
   } catch (error) {
-    res.status(400).json({ message: "Something Went Wrong", success: false })
+    return res.status(400).json({ message: "Something Went Wrong", success: false })
   }
 }
 

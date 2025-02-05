@@ -8,7 +8,6 @@ const router = express.Router();
 router.post("/friendupdate", handleAddFriend);
 
 
-
 async function handleAddFriend(req, res) {
     try {
 
