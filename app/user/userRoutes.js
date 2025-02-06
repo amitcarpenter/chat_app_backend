@@ -31,8 +31,6 @@ router.get("/profile/:id", handleSecondUserProfile);
 router.get('/request/:action', handleIncomingRequest)
 
 
-
-
 // handle user registeration
 async function handleUserRegistration(req, res) {
   try {
@@ -101,22 +99,25 @@ async function handleProfileUpdate(req, res) {
 async function handleAllUsers(req, res) {
   try {
     const authHeader = req.headers["authorization"];
+    if (!authHeader) {
+      return res.status(400).json({ message: "Please Provide Auth Token", success: false });
+    }
     if (authHeader) {
       const result = await getAllUsers(authHeader);
       if (result && typeof result === "object") {
-        res.status(200).json({
+       return res.status(200).json({
           data: result,
           success: true,
         });
       } else {
-        res.status(400).json({
+       return res.status(400).json({
           message: result,
           success: false,
         });
       }
     }
   } catch (error) {
-    res.status(400).json({ message: "Something went wrong", success: false });
+   return res.status(400).json({ message: "Something went wrong", success: false });
   }
 }
 
@@ -124,19 +125,21 @@ async function handleAllUsers(req, res) {
 async function handleUserProfile(req, res) {
   try {
     const authHeader = req.headers["authorization"];
-
+    if (!authHeader) {
+      return res.status(400).json({ message: "Please Provide Auth Token", success: false });
+    }
     if (authHeader) {
       const userProfile = await getuserProfile(authHeader);
       if (userProfile && typeof userProfile === "object") {
-        res
+        return res
           .status(200)
           .json({ message: "User Details", data: userProfile, success: true });
       } else {
-        res.status(400).json({ message: userProfile, success: false });
+        return res.status(400).json({ message: userProfile, success: false });
       }
     }
   } catch (error) {
-    res.status(400).json({ message: "Something went wrong ", success: false });
+    return res.status(400).json({ message: "Something went wrong ", success: false });
   }
 }
 
@@ -161,16 +164,19 @@ async function handleIncomingRequest(req, res) {
   try {
     const action = req.params.action;
     const authHeader = req.headers["authorization"];
+
+    if (!authHeader) {
+      return res.status(400).json({ message: "Please Provide Auth Token", success: false });
+    }
     const reqlist = await getRequestList(authHeader, action)
     if (reqlist && typeof reqlist === "object") {
-      res.status(200).json({ data: reqlist, success: true })
+     return res.status(200).json({ data: reqlist, success: true })
     } else {
-      res.status(400).json({ message: reqlist, success: false })
-
+     return res.status(400).json({ message: reqlist, success: false })
     }
   } catch (error) {
     console.log(error, 'error')
-    res.status(400).json({ message: "Something went Wrong", success: false })
+   return res.status(400).json({ message: "Something went Wrong", success: false })
   }
 }
 

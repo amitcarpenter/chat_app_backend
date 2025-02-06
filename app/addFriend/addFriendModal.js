@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-
 const addFriendSchema = new mongoose.Schema({
     senderId: {
         type: mongoose.Types.ObjectId,

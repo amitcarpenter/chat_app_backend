@@ -2,7 +2,7 @@ const express = require("express");
 const { dbConnect } = require("./app/mongoConnection/dbConnect");
 const Port = process.env.PORT || 3000;
 const http = require("http");
-const SocketManager = require("./app/socket/SocketManager");
+const { SocketManager } = require("./app/socket/SocketManager");
 var bodyParser = require("body-parser");
 const cors = require("cors");
 const path = require("path");
@@ -26,6 +26,7 @@ let users = [];
 
 exports.IO = new SocketManager(server);
 
+
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 
@@ -48,3 +49,6 @@ dbConnect()
   .catch((error) => {
     console.log("an error occurred:", error);
   });
+
+
+module.exports = { server }; // Export the instance

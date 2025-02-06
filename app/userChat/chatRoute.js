@@ -7,6 +7,7 @@ const fs = require("fs");
 
 const { compressImage } = require("../middleware/imageCompress");
 const upload = require("../middleware/handleImage");
+const { SocketIO } = require("../socket/SocketManager");
 
 const router = express.Router();
 
@@ -22,16 +23,19 @@ router.post(
 router.get("/getrooms", handleAllRooms);
 router.get("/:roomId/:skip/:limit", handleUserChat);
 
-// exports.router = router;
+let APP_URL = process.env.APP_URL
+
+console.log(APP_URL);
 
 
 
 // handle all rooms
 async function handleAllRooms(req, res) {
   try {
-    console.log();
-    
     const authHeader = req.headers["authorization"];
+    if (!authHeader) {
+      return res.status(400).json({ message: "Please Provide Auth Token", success: false });
+    }
     const auth_token = authHeader.split(" ")[1];
     const allRooms = await getAllRooms(auth_token);
     if (allRooms && typeof allRooms === "object") {
@@ -39,14 +43,15 @@ async function handleAllRooms(req, res) {
         (a, b) =>
           new Date(b.lastMessage.createdAt) - new Date(a.lastMessage.createdAt)
       );
-      res.status(200).json({ data: sortroomchat, success: true });
+      // console.log(sortroomchat , "sortroomchat");
+      return res.status(200).json({ data: sortroomchat, success: true });
     } else {
-      res.status(200).json({ message: allRooms, data: [], success: true });
+      return res.status(200).json({ message: allRooms, data: [], success: true });
     }
   } catch (error) {
     console.log(error.message);
-    
-    res.status(400).json({
+
+    return res.status(400).json({
       success: false,
       message: "Something went wrong",
       success: false,
@@ -60,6 +65,9 @@ async function handleUserChat(req, res) {
     const roomId = req.params.roomId;
     let skip = req.params.skip;
     let limit = req.params.limit;
+
+    console.log(req.params, "params");
+
     const userChat = await getUserChat(roomId, skip, limit);
     if (userChat && typeof userChat === "object") {
       const getmessageData = await Promise.all(
@@ -76,16 +84,20 @@ async function handleUserChat(req, res) {
           };
         })
       );
-      res.status(200).json({
+      // console.log(getmessageData, 'getmessageData');
+
+      return res.status(200).json({
+
         data: getmessageData,
         success: true,
         totalLength: userChat.totallength,
       });
     } else {
-      res.status(200).json({ message: userChat, success: true, data: [] });
+      return res.status(200).json({ message: userChat, success: true, data: [] });
     }
   } catch (error) {
-    res.status(400).json({
+    console.log(error);
+    return res.status(400).json({
       success: false,
       message: "Something went wrong",
       success: false,
@@ -97,7 +109,7 @@ async function handleUserChat(req, res) {
 async function handleMessages(req, res) {
   let imageFile = "";
   if (req.file) {
-    imageFile = `chat/${req.file.filename}`;
+    imageFile = `${APP_URL}chat/${req.file.filename}`;
     imageFile = imageFile.replace(".jpg", "_2.jpg");
   }
   try {
@@ -106,10 +118,8 @@ async function handleMessages(req, res) {
     const senderUser = await User.find({ _id: senderId });
     const receiverUser = await User.find({ _id: receiverId });
     if (senderUser.length === 0 || receiverUser.length === 0) {
-      // res.status(400).json({ success: false, message: " wrong user" });
       throw error;
     }
-
     const message = {
       _id: _id,
       text: text,
@@ -117,6 +127,9 @@ async function handleMessages(req, res) {
       userId: userId,
       image: imageFile || "",
     };
+
+    console.log(message, "message");
+    
 
     const saveChat = await saveUserChat(message, roomId, receiverId, senderId);
     let messageSender = await User.findOne({ _id: message.userId });
@@ -128,12 +141,15 @@ async function handleMessages(req, res) {
         name: messageSender.first_name + messageSender.last_name,
       },
     };
-    IO.sendMessageToUser(receiverId, sendMesssageToUser, roomId, senderId);
-    res
+    // console.log(sendMesssageToUser , "sendMesssageToUser");
+    
+    SocketIO.sendMessageToUser(receiverId, sendMesssageToUser, roomId, senderId);
+    return res
       .status(200)
-      .json({ data: message, success: true, message: "message sent" });
+      .json({ data: sendMesssageToUser, success: true, message: "message sent" });
   } catch (error) {
-    res
+    console.log(error);
+    return res
       .status(400)
       .json({ success: false, message: "Something went wrong", data: {} });
   }
