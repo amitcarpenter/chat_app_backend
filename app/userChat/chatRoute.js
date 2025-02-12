@@ -119,35 +119,6 @@ async function message_with_bot(req, res) {
   }
 }
 
-// async function handleAllRooms(req, res) {
-//   try {
-//     const authHeader = req.headers["authorization"];
-//     if (!authHeader) {
-//       return res.status(400).json({ message: "Please Provide Auth Token", success: false });
-//     }
-//     const auth_token = authHeader.split(" ")[1];
-//     const allRooms = await getAllRooms(auth_token);
-//     if (allRooms && typeof allRooms === "object") {
-//       const sortroomchat = allRooms.sort(
-//         (a, b) =>
-//           new Date(b.lastMessage.createdAt) - new Date(a.lastMessage.createdAt)
-//       );
-//       // console.log(sortroomchat , "sortroomchat");
-//       return res.status(200).json({ data: sortroomchat, success: true });
-//     } else {
-//       return res.status(200).json({ message: allRooms, data: [], success: true });
-//     }
-//   } catch (error) {
-//     console.log(error.message);
-
-//     return res.status(400).json({
-//       success: false,
-//       message: "Something went wrong",
-//       success: false,
-//     });
-//   }
-// }
-
 async function handleAllRooms(req, res) {
   try {
     const authHeader = req.headers["authorization"];
@@ -180,48 +151,6 @@ async function handleAllRooms(req, res) {
     });
   }
 }
-
-// async function handleUserChat(req, res) {
-//   try {
-//     const roomId = req.params.roomId;
-//     let skip = req.params.skip;
-//     let limit = req.params.limit;
-//     const userChat = await getUserChat(roomId, skip, limit);
-//     if (userChat && typeof userChat === "object") {
-//       const getmessageData = await Promise.all(
-//         userChat.roomChat[0].messages.map(async (item) => {
-//           let userDetail = await User.findById(item.userId);
-//           return {
-//             ...item,
-//             user: {
-//               _id: item.userId || "67a0a2999227256f37d5c02a",
-//               avatar: userDetail.avatar || "bot",
-//               first_name: userDetail.first_name || "bot",
-//               last_name: userDetail.last_name || "bot",
-//             },
-//           };
-//         })
-//       );
-//       // console.log(getmessageData, 'getmessageData');
-
-//       return res.status(200).json({
-
-//         data: getmessageData,
-//         success: true,
-//         totalLength: userChat.totallength,
-//       });
-//     } else {
-//       return res.status(200).json({ message: userChat, success: true, data: [] });
-//     }
-//   } catch (error) {
-//     console.log(error);
-//     return res.status(400).json({
-//       success: false,
-//       message: "Something went wrong",
-//       success: false,
-//     });
-//   }
-// }
 
 async function handleUserChat(req, res) {
   try {
@@ -276,9 +205,6 @@ async function handleUserChat(req, res) {
     });
   }
 }
-
-
-
 
 async function handleMessages(req, res) {
   let imageFile = "";

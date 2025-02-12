@@ -25,7 +25,6 @@ class SocketManager {
       console.log("Connected", userId);
       SocketManager.connectedUsers[userId] = socket.id;
 
-
       socket.on("disconnect", () => {
         const userID = Object.keys(SocketManager.connectedUsers).find(
           (key) => SocketManager.connectedUsers[key] === socket.id
@@ -124,7 +123,6 @@ class SocketManager {
     }
   }
 }
-
 
 let SocketIO = new SocketManager(server);
 
