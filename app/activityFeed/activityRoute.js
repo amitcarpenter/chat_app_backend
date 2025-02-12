@@ -214,13 +214,12 @@ async function handleFilterFeed(req, res) {
     const { visibility, distance, longitude, latitude, tag, location } = req.body;
     const authHeader = req.headers["authorization"];
     const result = await getFilterPost(authHeader, visibility, distance, longitude, latitude, location, tag)
+    console.log(req.body);
 
-    // If no result or empty feeds, return success response
     if (!result || !result.feeds || result.feeds.length === 0) {
       return res.status(200).json({ success: true, data: [] });
     }
 
-    // Append APP_URL to file paths in each feed
     const final_result = await Promise.all(
       result.feeds.map((feed) => {
         feed.file = APP_URL + feed.file;
@@ -228,6 +227,7 @@ async function handleFilterFeed(req, res) {
       })
     );
 
+    
     let data = { feeds: final_result }
 
     if (result && typeof result == 'object') {

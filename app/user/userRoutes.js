@@ -54,6 +54,8 @@ async function handleUserRegistration(req, res) {
 // updating user auth token
 async function handleAuthUpdate(req, res) {
   try {
+    console.log(req.body);
+    
     const result = await authUpdateToken(req.body);
     if (result && typeof result === "object") {
       res.status(200).json({
