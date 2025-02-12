@@ -70,58 +70,53 @@ class SocketManager {
     }
     let botResponseData = null;
     try {
-      // const botResponse = await axios.post(
-      //   "http://44.207.169.4:8080/predict",
-      //   {
-      //     input: `\nYou: Hello!\nUser: ${message.text}\n`,
-      //     generator_kwargs: {
-      //       max_new_tokens: 128,
-      //       do_sample: true,
-      //       temperature: 0.01,
-      //       top_p: 0.9,
-      //       num_return_sequences: 1,
-      //     },
-      //   },
-      //   {
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       Accept: "application/json",
-      //     },
-      //     timeout: 60000,
-      //   }
-      // );
-      // botResponseData = botResponse.data.output;
-      // bot_response_message = botResponseData || "Bot did not return a response";
-      // console.log("Bot Response:", botResponseData);
-      // if (botResponseData) {
-      let message_id = message._id + 2
-      const botMessage = [{
-        _id: `${message_id}`,
-        // text: "Hey! I'm doing great. How about you? ",
-        // text: "Today is Tuesday, 11th February 2025. ",
-        // text: "Yes, actually! I recently learned about advancements in AI that focus on emotional recognition. Some AI systems are getting really good at understanding human emotions through text, voice, and even facial expressions.",
-        text: "The highlight of my week has definitely been seeing how quickly people adapt to the new updates and features! It's always great to see the improvements in action, especially when they make communication smoother and more fun..",
-        createdAt: new Date(),
-        userId: receiverId,
-        image: "",
-        user: {
-          _id: receiverId,
-          avatar: message.user.avatar,
-          name: message.user.name,
+      const botResponse = await axios.post(
+        "http://44.207.169.4:8080/predict",
+        {
+          input: `\nYou: Hello!\nUser: ${message.text}\n`,
+          generator_kwargs: {
+            max_new_tokens: 128,
+            do_sample: true,
+            temperature: 0.01,
+            top_p: 0.9,
+            num_return_sequences: 1,
+          },
         },
-      }];
-
-      console.log(message, "graceranchgoldendoodles.com");
-
-      console.log(botMessage, "botMessage");
-      await saveBotChat(botMessage, roomId, senderId, receiverId);
-      SocketManager.io.to(senderSocketId).emit("sendermessage", botMessage);
-      console.log("sender event call");
-      // }
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          timeout: 60000,
+        }
+      );
+      botResponseData = botResponse.data.output;
+      // bot_response_message = botResponseData || "Bot did not return a response";
+      console.log("Bot Response:", botResponseData);
+      if (botResponseData) {
+        let message_id = message._id + 2
+        const botMessage = [{
+          _id: `${message_id}`,
+          text: botResponseData,
+          createdAt: new Date(),
+          userId: receiverId,
+          image: "",
+          user: {
+            _id: receiverId,
+            avatar: message.user.avatar,
+            name: message.user.name,
+          },
+        }];
+        console.log(botMessage, "botMessage");
+        await saveBotChat(botMessage, roomId, senderId, receiverId);
+        SocketManager.io.to(senderSocketId).emit("sendermessage", botMessage);
+        console.log("sender event call");
+      }
     } catch (error) {
       console.error("Bot API Error:", error.response?.data || error.message);
     }
   }
+
 }
 
 let SocketIO = new SocketManager(server);

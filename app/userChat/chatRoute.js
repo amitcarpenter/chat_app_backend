@@ -158,6 +158,8 @@ async function handleUserChat(req, res) {
     let skip = Number(req.params.skip);
     let limit = Number(req.params.limit);
 
+    console.log(roomId, "room id ");
+
     // Validate inputs
     if (!roomId) {
       return res.status(200).json({ success: false, message: "roomId is required" });
@@ -256,7 +258,5 @@ async function handleMessages(req, res) {
       .json({ success: false, message: "Something went wrong", data: {} });
   }
 }
-
-
 
 module.exports = router;

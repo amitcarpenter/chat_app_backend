@@ -17,12 +17,7 @@ const router = express.Router();
 //post routes....
 router.post("/register", handleUserRegistration);
 router.post("/login", handleAuthUpdate);
-router.put(
-  "/update",
-  upload.single("avatar"),
-  compressImage,
-  handleProfileUpdate
-);
+router.put("/update", upload.single("avatar"), compressImage, handleProfileUpdate);
 
 //get routes....
 router.get("/alluser", handleAllUsers);
@@ -55,7 +50,7 @@ async function handleUserRegistration(req, res) {
 async function handleAuthUpdate(req, res) {
   try {
     console.log(req.body);
-    
+
     const result = await authUpdateToken(req.body);
     if (result && typeof result === "object") {
       res.status(200).json({
@@ -107,19 +102,19 @@ async function handleAllUsers(req, res) {
     if (authHeader) {
       const result = await getAllUsers(authHeader);
       if (result && typeof result === "object") {
-       return res.status(200).json({
+        return res.status(200).json({
           data: result,
           success: true,
         });
       } else {
-       return res.status(400).json({
+        return res.status(400).json({
           message: result,
           success: false,
         });
       }
     }
   } catch (error) {
-   return res.status(400).json({ message: "Something went wrong", success: false });
+    return res.status(400).json({ message: "Something went wrong", success: false });
   }
 }
 
@@ -161,7 +156,6 @@ async function handleSecondUserProfile(req, res) {
   }
 }
 
-
 async function handleIncomingRequest(req, res) {
   try {
     const action = req.params.action;
@@ -172,13 +166,13 @@ async function handleIncomingRequest(req, res) {
     }
     const reqlist = await getRequestList(authHeader, action)
     if (reqlist && typeof reqlist === "object") {
-     return res.status(200).json({ data: reqlist, success: true })
+      return res.status(200).json({ data: reqlist, success: true })
     } else {
-     return res.status(400).json({ message: reqlist, success: false })
+      return res.status(400).json({ message: reqlist, success: false })
     }
   } catch (error) {
     console.log(error, 'error')
-   return res.status(400).json({ message: "Something went Wrong", success: false })
+    return res.status(400).json({ message: "Something went Wrong", success: false })
   }
 }
 
