@@ -4,6 +4,8 @@ const axios = require("axios");
 const { saveBotChat } = require("../userChat/chatController");
 const { User } = require("../user/userModal");
 
+const ai_endpoint = process.env.AI_ENDPOINT
+
 class SocketManager {
 
   static connectedUsers = {};
@@ -71,7 +73,7 @@ class SocketManager {
     let botResponseData = null;
     try {
       const botResponse = await axios.post(
-        "http://44.207.169.4:8080/predict",
+        `${ai_endpoint}`,
         {
           input: `\nYou: Hello!\nUser: ${message.text}\n`,
           generator_kwargs: {

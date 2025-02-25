@@ -5,6 +5,10 @@ const { User } = require("../user/userModal");
 const { Friend } = require("./addFriendModal");
 
 
+
+
+
+
 async function addFriend(authHeader, receiverId, action) {
     try {
         const auth_token = authHeader.split(" ")[1];
