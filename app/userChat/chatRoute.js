@@ -20,7 +20,6 @@ router.get("/:roomId/:skip/:limit", handleUserChat);
 let APP_URL = process.env.APP_URL
 
 
-
 async function message_with_bot(req, res) {
   let imageFile = "";
   if (req.file) {
@@ -59,48 +58,6 @@ async function message_with_bot(req, res) {
 
     SocketIO.sendMessageToBot(receiverId, sendMessageToUser, roomId, senderId);
 
-    // let bot_response_message = "No response from the LLM";
-    // let botResponseData = null;
-
-    // try {
-    //   const botResponse = await axios.post(
-    //     "http://44.207.169.4:8080/predict",
-    //     {
-    //       input: `\nYou: Hello!\nUser: ${text}\n`,
-    //       generator_kwargs: {
-    //         max_new_tokens: 128,
-    //         do_sample: true,
-    //         temperature: 0.01,
-    //         top_p: 0.9,
-    //         num_return_sequences: 1,
-    //       },
-    //     },
-    //     {
-    //       headers: {
-    //         "Content-Type": "application/json",
-    //         Accept: "application/json",
-    //       },
-    //       timeout: 60000,
-    //     }
-    //   );
-
-    //   botResponseData = botResponse.data.output;
-    //   bot_response_message = botResponseData || "Bot did not return a response";
-    //   console.log("Bot Response:", botResponseData);
-    //   if (botResponseData) {
-    //     const botMessage = {
-    //       _id: `${_id}-bot`,
-    //       text: botResponseData,
-    //       createdAt: new Date(),
-    //       userId: receiverId,
-    //       image: "",
-    //     };
-    //     await saveBotChat(botMessage, roomId, senderId, receiverId);
-    //     SocketIO.sendMessageToBot(senderId, botMessage, roomId, receiverId);
-    //   }
-    // } catch (error) {
-    //   console.error("Bot API Error:", error.response?.data || error.message);
-    // }
 
     return res.status(200).json({
       success: true,
@@ -121,6 +78,10 @@ async function message_with_bot(req, res) {
 
 async function handleAllRooms(req, res) {
   try {
+    console.log("room api call ");
+    console.log("room api call ");
+    console.log("room api call ");
+    
     const authHeader = req.headers["authorization"];
     if (!authHeader) {
       return res.status(200).json({ message: "Please Provide Auth Token", success: false });

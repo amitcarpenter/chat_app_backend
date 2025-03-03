@@ -191,9 +191,9 @@ class SocketManager {
           delete SocketManager.connectedUsers[userID];
           console.log(`User ${userID} disconnected`);
         }
-      });
+      }); 
 
-      
+
     });
   }
 
