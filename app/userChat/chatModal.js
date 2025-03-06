@@ -33,6 +33,10 @@ const chatSchema = new mongoose.Schema({
         type: String,
       },
 
+      is_read: {
+        type: Boolean,
+      },
+
       Seen: Boolean,
     },
   ],

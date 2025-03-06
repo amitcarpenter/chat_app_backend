@@ -9,13 +9,15 @@ const { compressImage } = require("../middleware/imageCompress");
 const upload = require("../middleware/handleImage");
 const { SocketIO } = require("../socket/SocketManager");
 const axios = require("axios");
+const { Chat } = require("./chatModal");
 
 const router = express.Router();
 
+router.post("/handlyTyping", handlyTyping);
 router.post("/sendmessage", upload.single("image"), compressImage, handleMessages);
 router.post("/sendmessage-to-bot", upload.single("image"), compressImage, message_with_bot);
 router.get("/getrooms", handleAllRooms);
-router.get("/:roomId/:skip/:limit", handleUserChat);
+router.get("/:roomId/:skip/:limit/:user_id", handleUserChat);
 
 let APP_URL = process.env.APP_URL
 
@@ -78,10 +80,7 @@ async function message_with_bot(req, res) {
 
 async function handleAllRooms(req, res) {
   try {
-    console.log("room api call ");
-    console.log("room api call ");
-    console.log("room api call ");
-    
+
     const authHeader = req.headers["authorization"];
     if (!authHeader) {
       return res.status(200).json({ message: "Please Provide Auth Token", success: false });
@@ -118,10 +117,42 @@ async function handleUserChat(req, res) {
     const { roomId } = req.params;
     let skip = Number(req.params.skip);
     let limit = Number(req.params.limit);
+    let user_id = req.params.user_id;
 
-    console.log(roomId, "room id ");
+    if (!user_id) return res.json({ success: false, status: 400, message: "user id is not provided" })
+    const [user1, user2] = roomId.split("_");
+    const actualReceiverId = user_id === user1 ? user2 : user1;
 
-    // Validate inputs
+    const chat = await Chat.find(
+      {
+        roomId: roomId,
+        messages: {
+          $elemMatch: {
+            userId: { $ne: user_id },
+            is_read: false
+          }
+        }
+      },
+      { "messages._id": 1, _id: 0 }
+    );
+
+    const messageIds = chat.flatMap(c =>
+      c.messages
+        .map(m => m._id)
+    );
+
+
+    if (messageIds.length > 0) {
+      await Chat.updateMany(
+        { "messages._id": { $in: messageIds } },
+        { $set: { "messages.$[elem].is_read": true } },
+        { arrayFilters: [{ "elem._id": { $in: messageIds } }] }
+      );
+
+      SocketIO.MessageReadIds(actualReceiverId, messageIds);
+    }
+
+
     if (!roomId) {
       return res.status(200).json({ success: false, message: "roomId is required" });
     }
@@ -176,9 +207,8 @@ async function handleMessages(req, res) {
     imageFile = imageFile.replace(".jpg", "_2.jpg");
   }
   try {
-    const { _id, text, createdAt, roomId, receiverId, senderId, userId } =
+    const { _id, text, createdAt, roomId, receiverId, senderId, userId, is_read = false } =
       req.body;
-    console.log(req.body);
 
     const senderUser = await User.find({ _id: senderId });
     const receiverUser = await User.find({ _id: receiverId });
@@ -191,10 +221,8 @@ async function handleMessages(req, res) {
       createdAt: createdAt,
       userId: userId,
       image: imageFile || "",
+      is_read: is_read
     };
-
-    console.log(message, "message");
-
 
     const saveChat = await saveUserChat(message, roomId, receiverId, senderId);
     let messageSender = await User.findOne({ _id: message.userId });
@@ -202,13 +230,16 @@ async function handleMessages(req, res) {
       ...message,
       user: {
         _id: message.userId,
-        avatar: messageSender.avatar,
+        avatar: messageSender.avatar || "",
         name: messageSender.first_name + messageSender.last_name,
       },
     };
-    // console.log(sendMesssageToUser , "sendMesssageToUser");
 
     SocketIO.sendMessageToUser(receiverId, sendMesssageToUser, roomId, senderId);
+    const userChat = await Chat.findOne({ roomId });
+    if (userChat) {
+      SocketIO.getSocketRooms(receiverId, roomId, senderId)
+    }
     return res
       .status(200)
       .json({ data: sendMesssageToUser, success: true, message: "message sent" });
@@ -219,5 +250,21 @@ async function handleMessages(req, res) {
       .json({ success: false, message: "Something went wrong", data: {} });
   }
 }
+
+async function handlyTyping(req, res) {
+  try {
+    const data = req.body;
+    SocketIO.TypingEvent(data);
+    return res
+      .status(200)
+      .json({ message: "user typing" });
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(400)
+      .json({ success: false, message: "Something went wrong" });
+  }
+}
+
 
 module.exports = router;
