@@ -156,10 +156,15 @@ async function handleSecondUserProfile(req, res) {
       console.log("################");
       
       // If profile has an avatar, prepend APP_URL
-      if (secondUserProfile.sortedfeedData[0].file) {
-        secondUserProfile.sortedfeedData[0].file = `${APP_URL}${secondUserProfile.sortedfeedData[0].file}`;
-        console.log(`${APP_URL}${secondUserProfile.sortedfeedData[0].file}`);
-
+      
+      if (Array.isArray(secondUserProfile.sortedfeedData)) {
+        secondUserProfile.sortedfeedData = secondUserProfile.sortedfeedData.map(feed => {
+          if (feed.file) {
+            feed.file = `${APP_URL}${feed.file}`;
+            console.log(feed.file); // Logging updated file URL
+          }
+          return feed;
+        });
       }
 
       return res.status(200).json({ data: secondUserProfile, success: true });
