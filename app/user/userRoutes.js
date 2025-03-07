@@ -151,8 +151,10 @@ async function handleSecondUserProfile(req, res) {
 
     if (secondUserProfile && typeof secondUserProfile === "object") {
       // If profile has an avatar, prepend APP_URL
-      if (secondUserProfile.userAvatar) {
-        secondUserProfile.userAvatar = `${APP_URL}${secondUserProfile.userAvatar}`;
+      if (sortedfeedData[0].file) {
+        sortedfeedData[0].file = `${APP_URL}${sortedfeedData[0].file}`;
+        console.log(`${APP_URL}${sortedfeedData[0].file}`);
+        
       }
 
       return res.status(200).json({ data: secondUserProfile, success: true });
