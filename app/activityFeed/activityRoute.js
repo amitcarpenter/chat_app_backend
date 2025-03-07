@@ -27,7 +27,7 @@ router.post('/filter-feed', handleFilterFeed)
 router.post("/createnew", upload.single("file"), compressImage, handleNewFeed);
 router.post('/edit-feed', upload.single("file"), compressImage, handleFeedEdit)
 
-const APP_URL = process.env.APP_URL
+const APP_URL = process.env.APP_URLcr
 console.log(APP_URL);
 
 
@@ -58,8 +58,8 @@ async function handleNewFeed(req, res) {
   try {
     const { userId, caption, location, longitude, latitude, tag, visibility } = req.body;
     const authHeader = req.headers["authorization"];
-    const auth_token = '12323222';
-    // const auth_token = authHeader.split(" ")[1];
+    // const auth_token = '12323222';
+    const auth_token = authHeader.split(" ")[1];
     const newFeed = await createNewFeed(
       auth_token,
       userId,
