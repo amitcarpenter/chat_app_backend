@@ -146,7 +146,7 @@ async function getAllRooms(auth_token) {
             return senderUser
               ? {
                 first_name: senderUser.first_name || "bot",
-                avatar: senderUser.avatar || "bot",
+                avatar: senderUser.avatar ? senderUser.avatar : "",
                 last_name: senderUser.last_name || "bot",
                 _id: senderUser._id || "67a0a2999227256f37d5c02a",
                 lastMessage,
