@@ -174,7 +174,7 @@ async function handleUserChat(req, res) {
             ...item,
             user: {
               _id: item.userId || "67a0a2999227256f37d5c02a",
-              avatar: userDetail?.avatar || "bot",
+              avatar: userDetail?.avatar ? userDetail?.avatar : "",
               first_name: userDetail?.first_name || "bot",
               last_name: userDetail?.last_name || "bot",
             },
