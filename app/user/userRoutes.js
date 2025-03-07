@@ -14,6 +14,8 @@ const { compressImage } = require("../middleware/imageCompress");
 
 const router = express.Router();
 
+const APP_URL = process.env.APP_URL;
+
 //post routes....
 router.post("/register", handleUserRegistration);
 router.post("/login", handleAuthUpdate);
@@ -146,13 +148,19 @@ async function handleSecondUserProfile(req, res) {
     const userId = req.params.id;
     const authHeader = req?.headers["authorization"];
     const secondUserProfile = await getSecondUserProfile(authHeader, userId);
+
     if (secondUserProfile && typeof secondUserProfile === "object") {
-      res.status(200).json({ data: secondUserProfile, success: true });
+      // If profile has an avatar, prepend APP_URL
+      if (secondUserProfile.userAvatar) {
+        secondUserProfile.userAvatar = `${APP_URL}${secondUserProfile.userAvatar}`;
+      }
+
+      return res.status(200).json({ data: secondUserProfile, success: true });
     } else {
-      res.status(400).json({ message: secondUserProfile, success: false });
+      return res.status(400).json({ message: secondUserProfile, success: false });
     }
   } catch (error) {
-    res.status(400).json({ message: "Something went wrong", success: false });
+    return res.status(400).json({ message: "Something went wrong", success: false });
   }
 }
 
