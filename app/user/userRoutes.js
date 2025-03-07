@@ -150,11 +150,16 @@ async function handleSecondUserProfile(req, res) {
     const secondUserProfile = await getSecondUserProfile(authHeader, userId);
 
     if (secondUserProfile && typeof secondUserProfile === "object") {
+
+      console.log(secondUserProfile);
+      console.log("################");
+      console.log("################");
+      
       // If profile has an avatar, prepend APP_URL
-      if (sortedfeedData[0].file) {
-        sortedfeedData[0].file = `${APP_URL}${sortedfeedData[0].file}`;
-        console.log(`${APP_URL}${sortedfeedData[0].file}`);
-        
+      if (secondUserProfile.sortedfeedData[0].file) {
+        secondUserProfile.sortedfeedData[0].file = `${APP_URL}${secondUserProfile.sortedfeedData[0].file}`;
+        console.log(`${APP_URL}${secondUserProfile.sortedfeedData[0].file}`);
+
       }
 
       return res.status(200).json({ data: secondUserProfile, success: true });
