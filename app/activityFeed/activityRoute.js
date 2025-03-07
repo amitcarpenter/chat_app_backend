@@ -27,7 +27,7 @@ router.post('/filter-feed', handleFilterFeed)
 router.post("/createnew", upload.single("file"), compressImage, handleNewFeed);
 router.post('/edit-feed', upload.single("file"), compressImage, handleFeedEdit)
 
-const APP_URL = process.env.APP_URLcr
+const APP_URL = process.env.APP_URL
 console.log(APP_URL);
 
 
