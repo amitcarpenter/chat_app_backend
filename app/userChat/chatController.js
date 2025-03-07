@@ -134,23 +134,23 @@ async function getAllRooms(auth_token) {
             const receiverUser = await User.findById(item.users[0].receiverId);
             return receiverUser
               ? {
-                  first_name: receiverUser.first_name || "bot",
-                  avatar: receiverUser.avatar || "bot",
-                  last_name: receiverUser.last_name || "bot",
-                  _id: receiverUser._id || "67a0a2999227256f37d5c02a",
-                  lastMessage,
-                }
+                first_name: receiverUser.first_name || "bot",
+                avatar: receiverUser.avatar ? receiverUser.avatar : "",
+                last_name: receiverUser.last_name || "bot",
+                _id: receiverUser._id || "67a0a2999227256f37d5c02a",
+                lastMessage,
+              }
               : null;
           } else if (CurrentUserId === item.users[0].receiverId) {
             const senderUser = await User.findById(item.users[0].senderId);
             return senderUser
               ? {
-                  first_name: senderUser.first_name || "bot",
-                  avatar: senderUser.avatar || "bot",
-                  last_name: senderUser.last_name || "bot",
-                  _id: senderUser._id || "67a0a2999227256f37d5c02a",
-                  lastMessage,
-                }
+                first_name: senderUser.first_name || "bot",
+                avatar: senderUser.avatar || "bot",
+                last_name: senderUser.last_name || "bot",
+                _id: senderUser._id || "67a0a2999227256f37d5c02a",
+                lastMessage,
+              }
               : null;
           } else {
             return null;

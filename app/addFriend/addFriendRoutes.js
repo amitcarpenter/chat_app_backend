@@ -15,12 +15,12 @@ async function handleAddFriend(req, res) {
         const authHeader = req.headers["authorization"];
         const reqFriend = await addFriend(authHeader, receiverId, action);
         if (reqFriend && typeof reqFriend === "object") {
-            res.status(200).json({ data: reqFriend, success: true })
+            return res.status(200).json({ data: reqFriend, success: true })
         } else {
-            res.status(400).json({ message: reqFriend, success: false })
+            return res.status(400).json({ message: reqFriend, success: false })
         }
     } catch (error) {
-        res.status(400).json({ message: "Something went wrong", success: false })
+        return res.status(400).json({ message: "Something went wrong", success: false })
     }
 }
 
