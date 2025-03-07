@@ -222,12 +222,15 @@ async function handleFilterFeed(req, res) {
 
     const final_result = await Promise.all(
       result.feeds.map((feed) => {
-        feed.file = APP_URL + feed.file;
+        if (feed.file) {
+
+          feed.file = APP_URL + feed.file;
+        }
         return feed;
       })
     );
 
-    
+
     let data = { feeds: final_result }
 
     if (result && typeof result == 'object') {
